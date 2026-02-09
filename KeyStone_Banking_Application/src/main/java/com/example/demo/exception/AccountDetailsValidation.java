@@ -1,5 +1,6 @@
 package com.example.demo.exception;
 
+
 public class AccountDetailsValidation extends RuntimeException {
 
 	public void validateAccountNumber(Long acno) {
@@ -32,6 +33,31 @@ public class AccountDetailsValidation extends RuntimeException {
 		
 		if(!mob.matches(pattern))
 			throw new InvalidMobileNumber("Mobile number must be digits!!");
+	}
+	
+	public void validName(String name) {
+		String pattern = "^[A-Za-z ]+$";
+		if(!name.matches(pattern))
+			throw new InvalidNameException("Name only contain alphabets !");
+		
+		if(name.length()<2)
+			throw new InvalidNameException("Invalid Name");
+	}
+	
+	public void validAdhar(Long adhaarNum) {
+		String aadhaarPattern = "^[2-9][0-9]{11}$";
+		String adhaar=String.valueOf(adhaarNum);
+		
+		if(!adhaar.matches(aadhaarPattern))
+			throw new InvalidAdharNumber("Enter valid adhar number!!");
+	}
+	
+	public void validateAmount(Double amt) {
+		if(amt==null)
+			throw new InvalidAmountException("Enter amount first !!");
+		
+		if(amt<0)
+			throw new InvalidAmountException("Amount cannot be negative !!");		
 	}
 	
 }
