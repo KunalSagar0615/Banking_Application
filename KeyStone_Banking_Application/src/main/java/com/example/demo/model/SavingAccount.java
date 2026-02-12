@@ -15,4 +15,6 @@ public class SavingAccount extends Account {
 
 	private Double minBalance=500.0;
 	private Double withdrawLimit=100000.0;
+	
+	
 }

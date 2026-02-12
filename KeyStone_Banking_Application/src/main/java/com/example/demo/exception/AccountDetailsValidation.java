@@ -1,6 +1,8 @@
 package com.example.demo.exception;
 
+import org.springframework.stereotype.Component;
 
+@Component
 public class AccountDetailsValidation extends RuntimeException {
 
 	public void validateAccountNumber(Long acno) {

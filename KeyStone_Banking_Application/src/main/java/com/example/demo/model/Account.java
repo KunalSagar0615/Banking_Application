@@ -2,6 +2,8 @@ package com.example.demo.model;
 
 import java.time.LocalDate;
 
+import org.hibernate.annotations.ManyToAny;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorColumn;
 import jakarta.persistence.DiscriminatorType;
@@ -60,5 +62,6 @@ public class Account {
 	
 	@NotNull(message = "You should have to add amount")
 	private Double balance;
+	
 	
 }

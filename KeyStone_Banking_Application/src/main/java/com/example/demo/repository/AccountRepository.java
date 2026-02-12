@@ -11,5 +11,5 @@ import com.example.demo.model.Account;
 public interface AccountRepository extends JpaRepository<Account, Long> {
 
 	Optional<Account> findByEmail(String email);
-	Optional<Account> findByMobile(String mob);
+	Optional<Account> findByMob(String mob);
 }

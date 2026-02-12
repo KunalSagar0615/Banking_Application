@@ -25,14 +25,7 @@ public class AccountServiceImpl implements AccountService{
 
 	@Autowired
 	private AccountDetailsValidation adv;
-	
-	@Autowired
-	private SavingAccount sa;
-	
-	@Autowired
-	private CurrentAccount ca;
-	
-	
+		
 	@Override
 	public void createAccount(Account account) {
 		adv.validName(account.getName());
@@ -40,12 +33,12 @@ public class AccountServiceImpl implements AccountService{
 		adv.validateMobileNumber(account.getMob());	
 		adv.validAdhar(account.getAdharNo());
 		
-		if(account instanceof SavingAccount) {
-			if(account.getBalance()<sa.getMinBalance())
-				throw new InvalidAmountException("You should have to add at least "+sa.getMinBalance()+"!");
-		}else {
-			if(account.getBalance()<ca.getMinBalance())
-				throw new InvalidAmountException("You should have to add at least "+ca.getMinBalance()+"!");
+		if(account instanceof SavingAccount savingAccount) {
+			if(account.getBalance()<savingAccount.getMinBalance())
+				throw new InvalidAmountException("You should have to add at least "+savingAccount.getMinBalance()+"!");
+		}else if(account instanceof CurrentAccount currentAccount){
+			if(account.getBalance()<currentAccount.getMinBalance())
+				throw new InvalidAmountException("You should have to add at least "+currentAccount.getMinBalance()+"!");
 		}
 		
 		
@@ -57,6 +50,7 @@ public class AccountServiceImpl implements AccountService{
 		return accountRepository.findAll();
 	}
 
+	@Transactional
 	@Override
 	public Account closeAccount(Long acno) {
 				
@@ -84,9 +78,9 @@ public class AccountServiceImpl implements AccountService{
 	}
 
 	@Override
-	public Account getByMobile(String mobile) {		
-		adv.validateMobileNumber(mobile);
-		return accountRepository.findByMobile(mobile).orElseThrow(()-> new RuntimeException("Mobile number not found !!"));
+	public Account getByMobile(String mob) {		
+		adv.validateMobileNumber(mob);
+		return accountRepository.findByMob(mob).orElseThrow(()-> new RuntimeException("Mobile number not found !!"));
 	}
 
 	@Override
@@ -129,18 +123,18 @@ public class AccountServiceImpl implements AccountService{
 		Account account = this.getByAccountNumber(acno);
 		adv.validateAmount(amount);		
 		
-		if(account instanceof SavingAccount) {
-			if(account.getBalance()-amount < sa.getMinBalance()) {
-				throw new InvalidAmountException("You should have to maintain minimum balance!! You can only withdrow"+(account.getBalance()-sa.getMinBalance()));
+		if(account instanceof SavingAccount savingAccount) {
+			if(account.getBalance()-amount < savingAccount.getMinBalance()) {
+				throw new InvalidAmountException("You should have to maintain minimum balance!! You can only withdrow"+(account.getBalance()-savingAccount.getMinBalance()));
 			}
 			
-			if(amount>sa.getWithdrawLimit()) {
-				throw new InvalidAmountException("You cannot withdraw more than "+sa.getWithdrawLimit()+" at a time !");
+			if(amount>savingAccount.getWithdrawLimit()) {
+				throw new InvalidAmountException("You cannot withdraw more than "+savingAccount.getWithdrawLimit()+" at a time !");
 			}
 			
-		}else {
-			if(account.getBalance()-amount < ca.getMinBalance()) {
-				throw new InvalidAmountException("You should have to maintain minimum balance!! You can only withdrow"+(account.getBalance()-ca.getMinBalance()));
+		}else if(account instanceof CurrentAccount currentAccount){
+			if(account.getBalance()-amount < currentAccount.getMinBalance()) {
+				throw new InvalidAmountException("You should have to maintain minimum balance!! You can only withdrow"+(account.getBalance()-currentAccount.getMinBalance()));
 			}
 		}
 		
