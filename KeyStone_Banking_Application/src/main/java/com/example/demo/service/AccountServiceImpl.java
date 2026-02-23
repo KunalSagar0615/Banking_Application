@@ -10,7 +10,10 @@ import com.example.demo.dto.AccountResponseDTO;
 import com.example.demo.dto.BalanceDTO;
 import com.example.demo.dto.UpdateAccountDTO;
 import com.example.demo.exception.AccountDetailsValidation;
+import com.example.demo.exception.AccountNotFoundException;
 import com.example.demo.exception.InvalidAmountException;
+import com.example.demo.exception.InvalidEmailFormate;
+import com.example.demo.exception.InvalidMobileNumber;
 import com.example.demo.mapper.AccountBalanceMapper;
 import com.example.demo.model.Account;
 import com.example.demo.model.CurrentAccount;
@@ -86,9 +89,10 @@ public class AccountServiceImpl implements AccountService{
 //--------------------------------------------------------CLOSE ACCOUNT--------------------------------------------------------------------
 	@Transactional
 	@Override
-	public Account closeAccount(Long acno) {
+	public AccountResponseDTO closeAccount(Long acno) {
 				
-		Account temp=this.getByAccountNumber(acno);
+		Account temp=accountRepository.findById(acno).orElseThrow(()-> new AccountNotFoundException("Account not found with account number: " + acno));
+		
 
 //		if(temp.getBalance()!=0) {
 //			use sendgrid here to send remaining amount temp.getBalance()
@@ -96,7 +100,7 @@ public class AccountServiceImpl implements AccountService{
 //			accountRepository.save(temp);
 //		}					
 		accountRepository.deleteById(acno);
-		return temp;
+		return AccountResponseDTO.toAccountResponseDTO(temp);
 	}
 
 	
@@ -104,7 +108,7 @@ public class AccountServiceImpl implements AccountService{
 	@Override
 	public Account getByAccountNumber(Long acno) {
 		adv.validateAccountNumber(acno);
-		return accountRepository.findById(acno).orElseThrow(()-> new RuntimeException("Account number not found!!"));
+		return accountRepository.findById(acno).orElseThrow(()-> new AccountNotFoundException("Account not found with account number: " + acno));
 	}
 
 
@@ -112,7 +116,7 @@ public class AccountServiceImpl implements AccountService{
 	@Override
 	public Account getByEmail(String email) {
 		adv.validateEmail(email);
-		return accountRepository.findByEmail(email).orElseThrow(() -> new RuntimeException("Email not found !!"));
+		return accountRepository.findByEmail(email).orElseThrow(() -> new InvalidEmailFormate("Email not found !!"));
 	}
 
 
@@ -120,7 +124,7 @@ public class AccountServiceImpl implements AccountService{
 	@Override
 	public Account getByMobile(String mob) {		
 		adv.validateMobileNumber(mob);
-		return accountRepository.findByMob(mob).orElseThrow(()-> new RuntimeException("Mobile number not found !!"));
+		return accountRepository.findByMob(mob).orElseThrow(()-> new InvalidMobileNumber("Mobile number not found !!"));
 	}
 
 
@@ -135,9 +139,9 @@ public class AccountServiceImpl implements AccountService{
 
 //--------------------------------------------------------UPDATE ACCOUNT DETAILS--------------------------------------------------------------------
 	@Override
-	public Account update(Long acno, UpdateAccountDTO dto) {
+	public UpdateAccountDTO update(Long acno, UpdateAccountDTO dto) {
 		
-		Account existingAccount =this.getByAccountNumber(acno);
+		Account existingAccount=this.getByAccountNumber(acno);
 		
 		if (dto.getName() != null) {
 			adv.validName(dto.getName());
@@ -158,12 +162,13 @@ public class AccountServiceImpl implements AccountService{
 	    if (dto.getAddress() != null)
 	        existingAccount.setAddress(dto.getAddress());
 		
-		return accountRepository.save(existingAccount);
+		
+		return UpdateAccountDTO.toAccountDTO(existingAccount);
 	}
 
 	
 
-//--------------------------------------------------------WITHDROW AMOUNT--------------------------------------------------------------------
+//--------------------------------------------------------WITHDRAW AMOUNT--------------------------------------------------------------------
 	@Transactional
 	@Override
 	public BalanceDTO withdrawAmount(Long acno, Double amount) {
@@ -173,7 +178,7 @@ public class AccountServiceImpl implements AccountService{
 		
 		if(account instanceof SavingAccount savingAccount) {
 			if(account.getBalance()-amount < savingAccount.getMinBalance()) {
-				throw new InvalidAmountException("You should have to maintain minimum balance!! You can only withdrow"+(account.getBalance()-savingAccount.getMinBalance()));
+				throw new InvalidAmountException("You should have to maintain minimum balance!! You can only withdraw "+(account.getBalance()-savingAccount.getMinBalance()));
 			}
 			
 			if(amount>savingAccount.getWithdrawLimit()) {
@@ -182,7 +187,7 @@ public class AccountServiceImpl implements AccountService{
 			
 		}else if(account instanceof CurrentAccount currentAccount){
 			if(account.getBalance()-amount < currentAccount.getMinBalance()) {
-				throw new InvalidAmountException("You should have to maintain minimum balance!! You can only withdrow"+(account.getBalance()-currentAccount.getMinBalance()));
+				throw new InvalidAmountException("You should have to maintain minimum balance!! You can only withdraw "+(account.getBalance()-currentAccount.getMinBalance()));
 			}
 		}
 		

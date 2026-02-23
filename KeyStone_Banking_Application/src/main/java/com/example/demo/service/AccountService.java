@@ -18,7 +18,7 @@ public interface AccountService {
 	List<AccountResponseDTO> getAllCurrentAccounts();
 	
 	//delete
-	Account closeAccount(Long acno);
+	AccountResponseDTO closeAccount(Long acno);
 	
 	//searching
 	Account getByAccountNumber(Long acno);
@@ -29,7 +29,7 @@ public interface AccountService {
 	BalanceDTO getBalance(Long acno);
 	
 	//update Account 
-	Account update(Long acno,UpdateAccountDTO updateAccountDto);
+	UpdateAccountDTO update(Long acno,UpdateAccountDTO updateAccountDto);
 	
 	//withdraw amount
 	BalanceDTO withdrawAmount(Long acno,Double amount);
