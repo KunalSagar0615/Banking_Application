@@ -34,7 +34,9 @@ public class AccountServiceImpl implements AccountService{
 	
 	@Autowired
 	private CurrentAccountRepository currentAccountRepository;
-		
+	
+	
+//-----------------------------CREATE ACCOUNT--------------------------------------	
 	@Override
 	public void createAccount(Account account) {
 		
@@ -49,28 +51,39 @@ public class AccountServiceImpl implements AccountService{
 			
 			if(account.getBalance()<savingAccount.getMinBalance())
 				throw new InvalidAmountException("You should have to add at least "+savingAccount.getMinBalance()+"!");
-//			else
-//				savingAccountRepository.save(savingAccount);
-//			
+
 		}else if(account instanceof CurrentAccount){
 			
 			CurrentAccount currentAccount=(CurrentAccount) account;
 			
 			if(account.getBalance()<currentAccount.getMinBalance())
 				throw new InvalidAmountException("You should have to add at least "+currentAccount.getMinBalance()+"!");
-//			else 
-//				currentAccountRepository.save(currentAccount);
-		
+
 		}	
 		
 		accountRepository.save(account);
 	}
 
+	
+// -----------------------------------DISPLAY--------------------------------------------------
 	@Override
 	public List<AccountResponseDTO> getAllAccounts() {
 		return accountRepository.findAll().stream().map(AccountResponseDTO :: toAccountResponseDTO).toList(); 	
 	}
+	
+	@Override
+	public List<AccountResponseDTO> getAllSavingAccounts() {
+		return savingAccountRepository.findAll().stream().map(AccountResponseDTO :: toAccountResponseDTO).toList();
+	}
 
+	@Override
+	public List<AccountResponseDTO> getAllCurrentAccounts() {
+		return currentAccountRepository.findAll().stream().map(AccountResponseDTO :: toAccountResponseDTO).toList();
+	}
+
+	
+	
+//--------------------------------------------------------CLOSE ACCOUNT--------------------------------------------------------------------
 	@Transactional
 	@Override
 	public Account closeAccount(Long acno) {
@@ -86,30 +99,41 @@ public class AccountServiceImpl implements AccountService{
 		return temp;
 	}
 
+	
+//--------------------------------------------------------SEARCH BY ACCOUNT NUMBER--------------------------------------------------------------------
 	@Override
 	public Account getByAccountNumber(Long acno) {
 		adv.validateAccountNumber(acno);
 		return accountRepository.findById(acno).orElseThrow(()-> new RuntimeException("Account number not found!!"));
 	}
 
+
+//--------------------------------------------------------SEARCH BY EMAIL--------------------------------------------------------------------
 	@Override
 	public Account getByEmail(String email) {
 		adv.validateEmail(email);
 		return accountRepository.findByEmail(email).orElseThrow(() -> new RuntimeException("Email not found !!"));
 	}
 
+
+//--------------------------------------------------------SEARCH BY MOBILE NUMBER--------------------------------------------------------------------
 	@Override
 	public Account getByMobile(String mob) {		
 		adv.validateMobileNumber(mob);
 		return accountRepository.findByMob(mob).orElseThrow(()-> new RuntimeException("Mobile number not found !!"));
 	}
 
+
+//--------------------------------------------------------DISPLAY BALANCE--------------------------------------------------------------------
 	@Override
 	public BalanceDTO getBalance(Long acno) {
 		   Account account =this.getByAccountNumber(acno);
 	       return AccountBalanceMapper.toBalanceDTO(account); 
 	}
 
+	
+
+//--------------------------------------------------------UPDATE ACCOUNT DETAILS--------------------------------------------------------------------
 	@Override
 	public Account update(Long acno, UpdateAccountDTO dto) {
 		
@@ -137,6 +161,9 @@ public class AccountServiceImpl implements AccountService{
 		return accountRepository.save(existingAccount);
 	}
 
+	
+
+//--------------------------------------------------------WITHDROW AMOUNT--------------------------------------------------------------------
 	@Transactional
 	@Override
 	public BalanceDTO withdrawAmount(Long acno, Double amount) {
@@ -163,6 +190,8 @@ public class AccountServiceImpl implements AccountService{
 		return AccountBalanceMapper.toBalanceDTO(account);
 	}
 
+
+//--------------------------------------------------------DEPOSIT AMOUNT--------------------------------------------------------------------
 	@Transactional
 	@Override
 	public BalanceDTO depositAmount(Long acno, Double amount) {
@@ -173,4 +202,6 @@ public class AccountServiceImpl implements AccountService{
 		account.setBalance(account.getBalance()+amount);
 		return AccountBalanceMapper.toBalanceDTO(account);
 	}
+
+	
 }

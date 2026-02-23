@@ -14,6 +14,8 @@ public interface AccountService {
 	
 	//display
 	List<AccountResponseDTO> getAllAccounts();
+	List<AccountResponseDTO> getAllSavingAccounts();
+	List<AccountResponseDTO> getAllCurrentAccounts();
 	
 	//delete
 	Account closeAccount(Long acno);

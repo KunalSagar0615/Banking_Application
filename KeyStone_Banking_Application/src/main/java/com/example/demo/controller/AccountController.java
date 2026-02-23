@@ -36,6 +36,16 @@ public class AccountController {
 	public List<AccountResponseDTO> getAllAccounts(){
 		return accountService.getAllAccounts();
 	}
+	
+	@GetMapping("/display-all-saving-accounts")
+	public List<AccountResponseDTO> getAllSavingAccounts(){
+		return accountService.getAllSavingAccounts();
+	}
+	
+	@GetMapping("/display-all-current-accounts")
+	public List<AccountResponseDTO> getAllCurrentAccounts(){
+		return accountService.getAllCurrentAccounts();
+	}
 
 	
 }
