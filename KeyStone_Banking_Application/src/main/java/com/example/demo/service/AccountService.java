@@ -2,6 +2,7 @@ package com.example.demo.service;
 
 import java.util.List;
 
+import com.example.demo.dto.AccountResponseDTO;
 import com.example.demo.dto.BalanceDTO;
 import com.example.demo.dto.UpdateAccountDTO;
 import com.example.demo.model.Account;
@@ -12,7 +13,7 @@ public interface AccountService {
 	void createAccount(Account account);
 	
 	//display
-	List<Account> getAllAccounts();
+	List<AccountResponseDTO> getAllAccounts();
 	
 	//delete
 	Account closeAccount(Long acno);

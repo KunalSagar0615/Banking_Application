@@ -1,12 +1,17 @@
 package com.example.demo.controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.demo.dto.AccountResponseDTO;
 import com.example.demo.model.Account;
 import com.example.demo.model.CurrentAccount;
 import com.example.demo.model.SavingAccount;
 import com.example.demo.service.AccountService;
+
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -20,12 +25,16 @@ public class AccountController {
 	@PostMapping("/create-saving-account")
 	public void createSavingAccount(@RequestBody SavingAccount savingAccount) {
 	    accountService.createAccount(savingAccount);
-//	    System.out.println(savingAccount);
 	}
 
 	@PostMapping("/create-current-account")
 	public void createCurrentAccount(@RequestBody CurrentAccount currentAccount) {
 	    accountService.createAccount(currentAccount);
+	}
+	
+	@GetMapping("/display-all-accounts")
+	public List<AccountResponseDTO> getAllAccounts(){
+		return accountService.getAllAccounts();
 	}
 
 	

@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.example.demo.dto.AccountResponseDTO;
 import com.example.demo.dto.BalanceDTO;
 import com.example.demo.dto.UpdateAccountDTO;
 import com.example.demo.exception.AccountDetailsValidation;
@@ -66,8 +67,8 @@ public class AccountServiceImpl implements AccountService{
 	}
 
 	@Override
-	public List<Account> getAllAccounts() {
-		return accountRepository.findAll();
+	public List<AccountResponseDTO> getAllAccounts() {
+		return accountRepository.findAll().stream().map(AccountResponseDTO :: toAccountResponseDTO).toList(); 	
 	}
 
 	@Transactional
