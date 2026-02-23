@@ -4,6 +4,8 @@ import java.time.LocalDate;
 
 import org.hibernate.annotations.ManyToAny;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorColumn;
 import jakarta.persistence.DiscriminatorType;
@@ -28,7 +30,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "AccountType" , discriminatorType = DiscriminatorType.STRING)
-@Table(name = "KeyStone_Banking_Application")
+@Table(name = "key_stone_banking_application")
 public class Account {
 
 	@Id
@@ -53,6 +55,7 @@ public class Account {
 	
 	private String address;
 	
+	@JsonIgnore
 	private LocalDate createdDate;
 	
 	@PrePersist //Run this method just before the entity is saved

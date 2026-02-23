@@ -8,6 +8,7 @@ public class KeyStoneBankingApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(KeyStoneBankingApplication.class, args);
+		System.out.println("Done");
 	}
 
 }

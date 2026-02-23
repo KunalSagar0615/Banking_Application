@@ -9,9 +9,9 @@ import lombok.NoArgsConstructor;
 @Data
 @Entity
 @NoArgsConstructor
-@AllArgsConstructor
+//@AllArgsConstructor
 @DiscriminatorValue("CURRENT")
 public class CurrentAccount extends Account {
 
-	private Double minBalance=100000.0;
+	private Double minBalance=10000.0;
 }

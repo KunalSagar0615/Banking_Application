@@ -15,6 +15,8 @@ import com.example.demo.model.Account;
 import com.example.demo.model.CurrentAccount;
 import com.example.demo.model.SavingAccount;
 import com.example.demo.repository.AccountRepository;
+import com.example.demo.repository.CurrentAccountRepository;
+import com.example.demo.repository.SavingAccountRepository;
 
 
 @Service
@@ -25,24 +27,42 @@ public class AccountServiceImpl implements AccountService{
 
 	@Autowired
 	private AccountDetailsValidation adv;
+	
+	@Autowired
+	private SavingAccountRepository savingAccountRepository;
+	
+	@Autowired
+	private CurrentAccountRepository currentAccountRepository;
 		
 	@Override
 	public void createAccount(Account account) {
+		
 		adv.validName(account.getName());
 		adv.validateEmail(account.getEmail());
 		adv.validateMobileNumber(account.getMob());	
 		adv.validAdhar(account.getAdharNo());
 		
-		if(account instanceof SavingAccount savingAccount) {
+		if(account instanceof SavingAccount) {
+			
+			SavingAccount savingAccount = (SavingAccount) account;
+			
 			if(account.getBalance()<savingAccount.getMinBalance())
 				throw new InvalidAmountException("You should have to add at least "+savingAccount.getMinBalance()+"!");
-		}else if(account instanceof CurrentAccount currentAccount){
+//			else
+//				savingAccountRepository.save(savingAccount);
+//			
+		}else if(account instanceof CurrentAccount){
+			
+			CurrentAccount currentAccount=(CurrentAccount) account;
+			
 			if(account.getBalance()<currentAccount.getMinBalance())
 				throw new InvalidAmountException("You should have to add at least "+currentAccount.getMinBalance()+"!");
-		}
+//			else 
+//				currentAccountRepository.save(currentAccount);
 		
+		}	
 		
-		accountRepository.save(account);		
+		accountRepository.save(account);
 	}
 
 	@Override
