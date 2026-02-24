@@ -5,6 +5,7 @@ import java.util.List;
 import com.example.demo.dto.AccountResponseDTO;
 import com.example.demo.dto.BalanceDTO;
 import com.example.demo.dto.UpdateAccountDTO;
+import com.example.demo.enumeration.TransactionType;
 import com.example.demo.model.Account;
 
 public interface AccountService {
@@ -36,5 +37,7 @@ public interface AccountService {
 	
 	//deposit amount
 	BalanceDTO depositAmount(Long acno,Double amount);
+	
+	void setTransaction(Long acccountno,Double amount,TransactionType transactionType);
 	
 }

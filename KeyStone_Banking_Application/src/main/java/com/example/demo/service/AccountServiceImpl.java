@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.example.demo.dto.AccountResponseDTO;
 import com.example.demo.dto.BalanceDTO;
 import com.example.demo.dto.UpdateAccountDTO;
+import com.example.demo.enumeration.TransactionType;
 import com.example.demo.exception.AccountDetailsValidation;
 import com.example.demo.exception.AccountNotFoundException;
 import com.example.demo.exception.InvalidAmountException;
@@ -18,9 +19,11 @@ import com.example.demo.mapper.AccountBalanceMapper;
 import com.example.demo.model.Account;
 import com.example.demo.model.CurrentAccount;
 import com.example.demo.model.SavingAccount;
+import com.example.demo.model.Transactions;
 import com.example.demo.repository.AccountRepository;
 import com.example.demo.repository.CurrentAccountRepository;
 import com.example.demo.repository.SavingAccountRepository;
+import com.example.demo.repository.TransactionRepository;
 
 
 @Service
@@ -37,6 +40,9 @@ public class AccountServiceImpl implements AccountService{
 	
 	@Autowired
 	private CurrentAccountRepository currentAccountRepository;
+	
+	@Autowired
+	private TransactionRepository transactionRepository;
 	
 	
 //-----------------------------CREATE ACCOUNT--------------------------------------	
@@ -192,7 +198,11 @@ public class AccountServiceImpl implements AccountService{
 		}
 		
 		account.setBalance(account.getBalance()-amount);
+		
+		setTransaction(acno, amount, TransactionType.DEBIT);
+		
 		return AccountBalanceMapper.toBalanceDTO(account);
+		
 	}
 
 
@@ -205,7 +215,16 @@ public class AccountServiceImpl implements AccountService{
 		
 		Account account = this.getByAccountNumber(acno);
 		account.setBalance(account.getBalance()+amount);
+		
+		setTransaction(acno, amount, TransactionType.CREDIT);
+
 		return AccountBalanceMapper.toBalanceDTO(account);
+	}
+
+
+	@Override
+	public void setTransaction(Long acccountno, Double amount, TransactionType transactionType) {
+		transactionRepository.save(new Transactions(acccountno, amount, transactionType));
 	}
 
 	
