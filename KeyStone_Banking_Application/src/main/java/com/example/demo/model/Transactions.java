@@ -37,7 +37,6 @@ public class Transactions {
 		this.transactionType = type;
 	}
 	
-	
 	@PrePersist
 	public void onTransitionDone() {
 		this.transitionDate=LocalDate.now();
