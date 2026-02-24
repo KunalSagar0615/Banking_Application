@@ -23,8 +23,7 @@ public class AccountDetailsValidation extends RuntimeException {
 			throw new InvalidEmailFormate("Email required !!");
 		
 		if(!email.matches(pattern))
-			throw new InvalidEmailFormate("Invalid Email formate !!");
-		
+			throw new InvalidEmailFormate("Invalid Email formate !!");		
 	}
 	
 	public void validateMobileNumber(String mob) {
