@@ -1,6 +1,7 @@
 package com.example.demo.service;
 
 import java.util.List;
+import java.util.Random;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -10,6 +11,7 @@ import com.example.demo.dto.AccountResponseDTO;
 import com.example.demo.dto.BalanceDTO;
 import com.example.demo.dto.TransactionsDTO;
 import com.example.demo.dto.UpdateAccountDTO;
+import com.example.demo.email.EmailService;
 import com.example.demo.enumeration.TransactionType;
 import com.example.demo.exception.AccountDetailsValidation;
 import com.example.demo.exception.AccountNotFoundException;
@@ -45,8 +47,12 @@ public class AccountServiceImpl implements AccountService{
 	@Autowired
 	private TransactionRepository transactionRepository;
 	
+	@Autowired
+	private EmailService emailService;
+	
 	
 //-----------------------------CREATE ACCOUNT--------------------------------------	
+		
 	@Override
 	public void createAccount(Account account) {
 		
@@ -127,14 +133,14 @@ public class AccountServiceImpl implements AccountService{
 	public AccountResponseDTO closeAccount(Long acno) {
 				
 		Account temp=accountRepository.findById(acno).orElseThrow(()-> new AccountNotFoundException("Account not found with account number: " + acno));
+		Double remainingBalance = temp.getBalance();
 		
+		String subject = "Account Closed Successfully";
+		String message = "<!DOCTYPE html><html><head><meta charset=\"UTF-8\"><title>Account Closed</title></head><body style=\"font-family:Arial;background:#f4f6f8;padding:20px;\"><div style=\"max-width:600px;margin:auto;background:white;padding:30px;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,0.1);\"><h2 style=\"color:#d32f2f;\">Account Closed Successfully</h2><p>Dear Customer,</p><p>Your account has been successfully closed.</p><p><strong>Remaining Amount Withdrawn:</strong> ₹" + remainingBalance + "</p><p>If you did not request this action, please contact our support immediately.</p><br><p>Thank you for banking with us.<br><strong>Keystone Banking Team</strong></p></div></body></html>";
+		emailService.sendMail(temp.getEmail(), subject, message);
 
-//		if(temp.getBalance()!=0) {
-//			use sendgrid here to send remaining amount temp.getBalance()
-//			temp.setBalance(0);
-//			accountRepository.save(temp);
-//		}					
-		accountRepository.deleteById(acno);
+	    //delete account
+	    accountRepository.deleteById(acno);
 		return AccountResponseDTO.toAccountResponseDTO(temp);
 	}
 
@@ -230,6 +236,10 @@ public class AccountServiceImpl implements AccountService{
 		
 		setTransaction(acno, amount, TransactionType.DEBIT);
 		
+		String subject = "Withdrawal Successful";
+		String message = "<!DOCTYPE html><html><head><meta charset=\"UTF-8\"><title>Withdrawal Successful</title></head><body style=\"margin:0; padding:0; font-family: Arial, sans-serif; background-color:#f4f6f8;\"><table align=\"center\" width=\"600\" cellpadding=\"0\" cellspacing=\"0\" style=\"background-color:#ffffff; margin-top:30px; border-radius:8px; overflow:hidden; box-shadow:0 2px 8px rgba(0,0,0,0.1);\"><tr><td style=\"background-color:#d32f2f; padding:20px; text-align:center; color:white;\"><h2 style=\"margin:0;\">Keystone Banking</h2></td></tr><tr><td style=\"padding:30px;\"><h3 style=\"color:#333;\">Withdrawal Successful ✅</h3><p style=\"font-size:15px; color:#555;\">Dear Customer,</p><p style=\"font-size:15px; color:#555;\">The following amount has been successfully debited from your account:</p><div style=\"background:#fdecea; padding:15px; border-radius:6px; margin:20px 0;\"><p style=\"margin:5px 0; font-size:16px;\"><strong>Withdrawn Amount:</strong> ₹" + amount + "</p><p style=\"margin:5px 0; font-size:16px;\"><strong>Available Balance:</strong> ₹" + account.getBalance() + "</p></div><p style=\"font-size:14px; color:#555;\">If you did not authorize this transaction, please contact our support team immediately.</p><p style=\"font-size:14px; color:#555; margin-top:25px;\">Thank you for banking with us.<br><strong>Keystone Banking Team</strong></p></td></tr><tr><td style=\"background-color:#f4f6f8; text-align:center; padding:15px; font-size:12px; color:#777;\">© 2026 Keystone Banking. All rights reserved.</td></tr></table></body></html>";
+		emailService.sendMail(account.getEmail(), subject, message);
+		
 		return AccountBalanceMapper.toBalanceDTO(account);
 		
 	}
@@ -246,6 +256,9 @@ public class AccountServiceImpl implements AccountService{
 		account.setBalance(account.getBalance()+amount);
 		
 		setTransaction(acno, amount, TransactionType.CREDIT);
+		String subject = "Deposit Successful";
+		String message = "<!DOCTYPE html><html><head><meta charset=\"UTF-8\"><title>Deposit Successful</title></head><body style=\"margin:0; padding:0; font-family: Arial, sans-serif; background-color:#f4f6f8;\"><table align=\"center\" width=\"600\" cellpadding=\"0\" cellspacing=\"0\" style=\"background-color:#ffffff; margin-top:30px; border-radius:8px; overflow:hidden; box-shadow:0 2px 8px rgba(0,0,0,0.1);\"><tr><td style=\"background-color:#1a73e8; padding:20px; text-align:center; color:white;\"><h2 style=\"margin:0;\">Keystone Banking</h2></td></tr><tr><td style=\"padding:30px;\"><h3 style=\"color:#333;\">Deposit Successful ✅</h3><p style=\"font-size:15px; color:#555;\">Dear Customer,</p><p style=\"font-size:15px; color:#555;\">We are pleased to inform you that the following amount has been successfully credited to your account:</p><div style=\"background:#f1f5f9; padding:15px; border-radius:6px; margin:20px 0;\"><p style=\"margin:5px 0; font-size:16px;\"><strong>Deposited Amount:</strong> ₹" + amount + "</p><p style=\"margin:5px 0; font-size:16px;\"><strong>Available Balance:</strong> ₹" + account.getBalance() + "</p></div><p style=\"font-size:14px; color:#555;\">If you did not perform this transaction, please contact our support team immediately.</p><p style=\"font-size:14px; color:#555; margin-top:25px;\">Thank you for banking with us.<br><strong>Keystone Banking Team</strong></p></td></tr><tr><td style=\"background-color:#f4f6f8; text-align:center; padding:15px; font-size:12px; color:#777;\">© 2026 Keystone Banking. All rights reserved.</td></tr></table></body></html>";
+		emailService.sendMail(account.getEmail(), subject, message);
 
 		return AccountBalanceMapper.toBalanceDTO(account);
 	}
