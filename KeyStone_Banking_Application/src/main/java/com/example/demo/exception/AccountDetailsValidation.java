@@ -25,8 +25,6 @@ public class AccountDetailsValidation extends RuntimeException {
 		if(!email.matches(pattern))
 			throw new InvalidEmailFormate("Invalid Email formate !!");
 		
-		
-		
 	}
 	
 	public void validateMobileNumber(String mob) {
