@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.demo.dto.AccountResponseDTO;
 import com.example.demo.dto.BalanceDTO;
+import com.example.demo.dto.TransactionsDTO;
 import com.example.demo.dto.UpdateAccountDTO;
 import com.example.demo.model.Account;
 import com.example.demo.model.CurrentAccount;
@@ -67,6 +68,13 @@ public class AccountController {
 		return ResponseEntity.ok(balanceDTO);
 	}
 	
+	@PutMapping("/deposit-amount/{acno}/{amount}")
+	public ResponseEntity<BalanceDTO> depositAmount(@PathVariable Long acno,@PathVariable Double amount) {
+		BalanceDTO balanceDTO = accountService.depositAmount(acno, amount);
+		
+		return ResponseEntity.ok(balanceDTO);
+	}
+	
 	@PutMapping("/update-account/{acno}")
 	public ResponseEntity<UpdateAccountDTO> update(@PathVariable Long acno, @RequestBody UpdateAccountDTO updateAccountDTO) {
 		UpdateAccountDTO dto = accountService.update(acno, updateAccountDTO);
@@ -92,6 +100,11 @@ public class AccountController {
 	@GetMapping("/search-by-mobile/{mobile}")
 	public ResponseEntity<Account> getByMobile(@PathVariable String mobile) {
 		return ResponseEntity.ok(accountService.getByMobile(mobile));
+	}
+	
+	@GetMapping("/display-account-transaction/{accno}")
+	public ResponseEntity<List<TransactionsDTO>> getTransactionsByAccNo(@PathVariable Long accno) {
+		return ResponseEntity.ok(accountService.getTransactionsByAccNo(accno));
 	}
 	
 }

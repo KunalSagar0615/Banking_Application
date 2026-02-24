@@ -8,6 +8,8 @@ import com.example.demo.enumeration.TransactionType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
@@ -19,10 +21,13 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "Account_Transitions")
+@Table(name = "Transitions")
 public class Transactions {
 
 	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	private Long transitionId;
+	
 	private Long accountno;
 	private LocalDate transitionDate;
 	private LocalTime transitionTime;

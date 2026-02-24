@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.example.demo.dto.AccountResponseDTO;
 import com.example.demo.dto.BalanceDTO;
+import com.example.demo.dto.TransactionsDTO;
 import com.example.demo.dto.UpdateAccountDTO;
 import com.example.demo.enumeration.TransactionType;
 import com.example.demo.exception.AccountDetailsValidation;
@@ -74,6 +75,8 @@ public class AccountServiceImpl implements AccountService{
 	}
 
 	
+	
+	
 // -----------------------------------DISPLAY--------------------------------------------------
 	@Override
 	public List<AccountResponseDTO> getAllAccounts() {
@@ -89,7 +92,33 @@ public class AccountServiceImpl implements AccountService{
 	public List<AccountResponseDTO> getAllCurrentAccounts() {
 		return currentAccountRepository.findAll().stream().map(AccountResponseDTO :: toAccountResponseDTO).toList();
 	}
+	
+	
 
+//--------------------------------------------------------DISPLAY TRANSACTIONS BY ACCOUNT NUMBER--------------------------------------------------------------------
+	@Override
+	public List<TransactionsDTO> getTransactionsByAccNo(Long accno) {
+
+	    Account account=this.getByAccountNumber(accno);
+	    
+	    List<Transactions> transactions =transactionRepository.findByAccountno(accno);
+	    if (transactions.isEmpty()) {
+	        throw new AccountNotFoundException("Transactions not found with Account number: " + accno);
+	    }
+	    
+	    return transactions.stream().map(TransactionsDTO::toTransactionsDTO).toList();
+	}
+	
+	
+	
+//--------------------------------------------------------DISPLAY BALANCE--------------------------------------------------------------------
+	@Override
+	public BalanceDTO getBalance(Long acno) {
+		Account account =this.getByAccountNumber(acno);
+		return AccountBalanceMapper.toBalanceDTO(account); 
+	}
+	
+	
 	
 	
 //--------------------------------------------------------CLOSE ACCOUNT--------------------------------------------------------------------
@@ -110,6 +139,7 @@ public class AccountServiceImpl implements AccountService{
 	}
 
 	
+	
 //--------------------------------------------------------SEARCH BY ACCOUNT NUMBER--------------------------------------------------------------------
 	@Override
 	public Account getByAccountNumber(Long acno) {
@@ -118,6 +148,8 @@ public class AccountServiceImpl implements AccountService{
 	}
 
 
+	
+	
 //--------------------------------------------------------SEARCH BY EMAIL--------------------------------------------------------------------
 	@Override
 	public Account getByEmail(String email) {
@@ -126,6 +158,8 @@ public class AccountServiceImpl implements AccountService{
 	}
 
 
+	
+	
 //--------------------------------------------------------SEARCH BY MOBILE NUMBER--------------------------------------------------------------------
 	@Override
 	public Account getByMobile(String mob) {		
@@ -134,12 +168,7 @@ public class AccountServiceImpl implements AccountService{
 	}
 
 
-//--------------------------------------------------------DISPLAY BALANCE--------------------------------------------------------------------
-	@Override
-	public BalanceDTO getBalance(Long acno) {
-		   Account account =this.getByAccountNumber(acno);
-	       return AccountBalanceMapper.toBalanceDTO(account); 
-	}
+
 
 	
 
@@ -227,5 +256,8 @@ public class AccountServiceImpl implements AccountService{
 		transactionRepository.save(new Transactions(acccountno, amount, transactionType));
 	}
 
+
 	
+
+
 }
