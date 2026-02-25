@@ -21,6 +21,7 @@ public class AccountDetailsValidation extends RuntimeException {
 		
 		if(email.trim().length()==0)
 			throw new InvalidEmailFormate("Email required !!");
+	
 		
 		if(!email.matches(pattern))
 			throw new InvalidEmailFormate("Invalid Email formate !!");		
