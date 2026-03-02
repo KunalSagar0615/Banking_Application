@@ -10,7 +10,7 @@ import com.example.demo.enumeration.TransactionType;
 import com.example.demo.model.Account;
 import com.example.demo.model.Transactions;
 
-public interface AccountService {
+public interface EmployeeService {
 
 	//create
 	void createAccount(Account account);
@@ -47,6 +47,8 @@ public interface AccountService {
 	
 	//display account Transactions
 	List<TransactionsDTO> getTransactionsByAccNo(Long accno);
-
+	
+	
+	
 	
 }

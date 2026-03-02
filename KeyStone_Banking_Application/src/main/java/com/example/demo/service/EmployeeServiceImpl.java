@@ -1,7 +1,6 @@
 package com.example.demo.service;
 
 import java.util.List;
-import java.util.Random;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -30,7 +29,7 @@ import com.example.demo.repository.TransactionRepository;
 
 
 @Service
-public class AccountServiceImpl implements AccountService{
+public class EmployeeServiceImpl implements EmployeeService{
 
 	@Autowired
 	private AccountRepository accountRepository;
