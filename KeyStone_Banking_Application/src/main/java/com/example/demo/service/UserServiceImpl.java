@@ -26,7 +26,7 @@ public class UserServiceImpl implements UserService {
 	public void registerUser(User user) {
 
 	    accountDetailsValidation.validateEmail(user.getEmail());
-	    User temp=userRepository.findByEmail(user.getEmail()).orElseThrow(() -> new RuntimeException("Email already exists!"));	 
+	    User temp=userRepository.findByEmail(user.getEmail()).orElseThrow(() -> new RuntimeException("Email already exists 1!"));	 
 	    
 	    accountDetailsValidation.validName(user.getName());
 	    

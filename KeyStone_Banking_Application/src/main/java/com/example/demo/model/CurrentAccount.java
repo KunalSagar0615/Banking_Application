@@ -6,12 +6,12 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Data
+//@Data
 @Entity
-@NoArgsConstructor
+//@NoArgsConstructor
 //@AllArgsConstructor
 @DiscriminatorValue("CURRENT")
 public class CurrentAccount extends Account {
 
-	private Double minBalance=10000.0;
+//	private Double minBalance=10000.0;
 }

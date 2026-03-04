@@ -7,5 +7,5 @@ import com.example.demo.model.SavingAccount;
 
 @Repository
 public interface SavingAccountRepository extends JpaRepository<SavingAccount, Long> {
-
+	
 }

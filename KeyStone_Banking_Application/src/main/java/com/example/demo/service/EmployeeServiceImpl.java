@@ -11,6 +11,7 @@ import com.example.demo.dto.BalanceDTO;
 import com.example.demo.dto.TransactionsDTO;
 import com.example.demo.dto.UpdateAccountDTO;
 import com.example.demo.email.EmailService;
+import com.example.demo.enumeration.AccountType;
 import com.example.demo.enumeration.TransactionType;
 import com.example.demo.exception.AccountDetailsValidation;
 import com.example.demo.exception.AccountNotFoundException;
@@ -19,10 +20,12 @@ import com.example.demo.exception.InvalidEmailFormate;
 import com.example.demo.exception.InvalidMobileNumber;
 import com.example.demo.mapper.AccountBalanceMapper;
 import com.example.demo.model.Account;
+import com.example.demo.model.AccountTypeConfig;
 import com.example.demo.model.CurrentAccount;
 import com.example.demo.model.SavingAccount;
 import com.example.demo.model.Transactions;
 import com.example.demo.repository.AccountRepository;
+import com.example.demo.repository.AccountTypeConfigRepository;
 import com.example.demo.repository.CurrentAccountRepository;
 import com.example.demo.repository.SavingAccountRepository;
 import com.example.demo.repository.TransactionRepository;
@@ -49,6 +52,9 @@ public class EmployeeServiceImpl implements EmployeeService{
 	@Autowired
 	private EmailService emailService;
 	
+	@Autowired
+	private AccountTypeConfigRepository accountTypeConfigRepository;
+	
 	
 //-----------------------------CREATE ACCOUNT--------------------------------------	
 		
@@ -57,24 +63,35 @@ public class EmployeeServiceImpl implements EmployeeService{
 		
 		adv.validName(account.getName());
 		adv.validateEmail(account.getEmail());
-		adv.validateMobileNumber(account.getMob());	
+		adv.validateMobileNumber(account.getMob());
 		adv.validAdhar(account.getAdharNo());
 		
-		if(account instanceof SavingAccount) {
-			
-			SavingAccount savingAccount = (SavingAccount) account;
-			
-			if(account.getBalance()<savingAccount.getMinBalance())
-				throw new InvalidAmountException("You should have to add at least "+savingAccount.getMinBalance()+"!");
-
-		}else if(account instanceof CurrentAccount){
-			
-			CurrentAccount currentAccount=(CurrentAccount) account;
-			
-			if(account.getBalance()<currentAccount.getMinBalance())
-				throw new InvalidAmountException("You should have to add at least "+currentAccount.getMinBalance()+"!");
-
-		}	
+		
+//		if(account instanceof SavingAccount) {
+//			
+//			SavingAccount savingAccount = (SavingAccount) account;
+//			
+//			if(account.getBalance()<savingAccount.getMinBalance())
+//				throw new InvalidAmountException("You should have to add at least "+savingAccount.getMinBalance()+"!");
+//
+//		}else if(account instanceof CurrentAccount){
+//			
+//			CurrentAccount currentAccount=(CurrentAccount) account;
+//			
+//			if(account.getBalance()<currentAccount.getMinBalance())
+//				throw new InvalidAmountException("You should have to add at least "+currentAccount.getMinBalance()+"!");
+//
+//		}	
+		AccountType type = null;
+		if(account instanceof SavingAccount)
+	        type = AccountType.SAVING;
+	    else if(account instanceof CurrentAccount)
+	        type = AccountType.CURRENT;
+		
+		AccountTypeConfig config=accountTypeConfigRepository.findById(type).orElseThrow(()-> new RuntimeException("CONFIGURATION NOT FOUND !"));
+		
+		if(account.getBalance() < config.getMIN_BALANCE())
+			throw new InvalidAmountException("You should have to add at least " + config.getMIN_BALANCE() + "!");
 		
 		accountRepository.save(account);
 	}
@@ -216,20 +233,33 @@ public class EmployeeServiceImpl implements EmployeeService{
 		Account account = this.getByAccountNumber(acno);
 		adv.validateAmount(amount);		
 		
-		if(account instanceof SavingAccount savingAccount) {
-			if(account.getBalance()-amount < savingAccount.getMinBalance()) {
-				throw new InvalidAmountException("You should have to maintain minimum balance!! You can only withdraw "+(account.getBalance()-savingAccount.getMinBalance()));
-			}
-			
-			if(amount>savingAccount.getWithdrawLimit()) {
-				throw new InvalidAmountException("You cannot withdraw more than "+savingAccount.getWithdrawLimit()+" at a time !");
-			}
-			
-		}else if(account instanceof CurrentAccount currentAccount){
-			if(account.getBalance()-amount < currentAccount.getMinBalance()) {
-				throw new InvalidAmountException("You should have to maintain minimum balance!! You can only withdraw "+(account.getBalance()-currentAccount.getMinBalance()));
-			}
-		}
+//		if(account instanceof SavingAccount savingAccount) {
+//			if(account.getBalance()-amount < savingAccount.getMinBalance()) {
+//				throw new InvalidAmountException("You should have to maintain minimum balance!! You can only withdraw "+(account.getBalance()-savingAccount.getMinBalance()));
+//			}
+//			
+//			if(amount>savingAccount.getWithdrawLimit()) {
+//				throw new InvalidAmountException("You cannot withdraw more than "+savingAccount.getWithdrawLimit()+" at a time !");
+//			}
+//			
+//		}else if(account instanceof CurrentAccount currentAccount){
+//			if(account.getBalance()-amount < currentAccount.getMinBalance()) {
+//				throw new InvalidAmountException("You should have to maintain minimum balance!! You can only withdraw "+(account.getBalance()-currentAccount.getMinBalance()));
+//			}
+//		}
+		AccountType type = null;
+		if(account instanceof SavingAccount)
+	        type = AccountType.SAVING;
+	    else if(account instanceof CurrentAccount)
+	        type = AccountType.CURRENT;
+		
+		AccountTypeConfig config=accountTypeConfigRepository.findById(type).orElseThrow(()-> new RuntimeException("CONFIGURATION NOT FOUND !"));
+		
+		if(account.getBalance()-amount < config.getMIN_BALANCE())
+			throw new InvalidAmountException("You should have to maintain minimum balance!! You can only withdraw "+(account.getBalance()-config.getMIN_BALANCE()));
+		
+		if(config.getWITHDRAW_LIMIT() != null && (amount > config.getWITHDRAW_LIMIT())) 
+			throw new InvalidAmountException("You cannot withdraw more than "+config.getWITHDRAW_LIMIT()+" at a time !");
 		
 		account.setBalance(account.getBalance()-amount);
 		
