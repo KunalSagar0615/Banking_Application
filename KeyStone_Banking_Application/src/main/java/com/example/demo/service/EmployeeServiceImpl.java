@@ -262,7 +262,7 @@ public class EmployeeServiceImpl implements EmployeeService{
 			throw new InvalidAmountException("You cannot withdraw more than "+config.getWITHDRAW_LIMIT()+" at a time !");
 		
 		account.setBalance(account.getBalance()-amount);
-		
+		accountRepository.save(account);
 		setTransaction(acno, amount, TransactionType.DEBIT);
 		
 		String subject = "Withdrawal Successful";

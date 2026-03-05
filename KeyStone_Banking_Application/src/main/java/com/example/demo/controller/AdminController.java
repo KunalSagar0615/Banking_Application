@@ -1,5 +1,7 @@
 package com.example.demo.controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -29,9 +31,9 @@ public class AdminController {
 	
 	
 	@GetMapping("/display-employees")
-	public ResponseEntity<User> display() {
-		User emp=(User) adminService.display();
-		return ResponseEntity.ok(emp);
+	public ResponseEntity<List<User>> display() {
+	    List<User> emp = adminService.display();
+	    return ResponseEntity.ok(emp);
 	}
 	
 	@DeleteMapping("/delete-employee/{empId}")

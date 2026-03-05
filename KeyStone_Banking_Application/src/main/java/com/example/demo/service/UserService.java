@@ -4,6 +4,6 @@ import com.example.demo.model.User;
 
 public interface UserService {
 	void registerUser(User user);
-	boolean loginUser(String email,String pass);
+	String loginUser(String email,String pass);
 	
 }

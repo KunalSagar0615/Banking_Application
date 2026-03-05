@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 
 import com.example.demo.email.EmailService;
 import com.example.demo.exception.AccountDetailsValidation;
+import com.example.demo.exception.InvalidEmailFormate;
 import com.example.demo.model.User;
 import com.example.demo.repository.UserRepository;
 
@@ -26,11 +27,12 @@ public class UserServiceImpl implements UserService {
 	public void registerUser(User user) {
 
 	    accountDetailsValidation.validateEmail(user.getEmail());
-	    User temp=userRepository.findByEmail(user.getEmail()).orElseThrow(() -> new RuntimeException("Email already exists 1!"));	 
-	    
+	    if(userRepository.findByEmail(user.getEmail()).isPresent()) {
+	        throw new InvalidEmailFormate("Email already exists !");
+	    }
 	    accountDetailsValidation.validName(user.getName());
 	    
-	    String pattern = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8}$";
+	    String pattern = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$";
 	    
 	    if(!user.getPassword().matches(pattern))
 	    	throw new RuntimeException("Invalid Password formate !");
@@ -41,12 +43,16 @@ public class UserServiceImpl implements UserService {
 
 	
 	@Override
-	public boolean loginUser(String email,String pass) {
+	public String loginUser(String email,String pass) {
 		
 		User temp=userRepository.findByEmail(email).orElse(null);
 		if(temp==null)
-			return false;
-		return pass.equals(temp.getPassword());		
+			return "USER NOT FOUND";
+		
+		if(pass.equals(temp.getPassword()))
+			return "LOGIN SUCCESSFULL";	
+		
+		return "INVALID PASSWORD";
 			
 	}
 
