@@ -55,7 +55,7 @@ public class Account {
 	
 	private String address;
 	
-	@JsonIgnore
+//	@JsonIgnore
 	private LocalDate createdDate;
 	
 	@PrePersist //Run this method just before the entity is saved

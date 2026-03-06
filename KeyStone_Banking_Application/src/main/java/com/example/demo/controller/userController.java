@@ -24,6 +24,7 @@ public class userController {
 	@PostMapping("/register")
 	public void add(@RequestBody User user) {
 		userService.registerUser(user);
+		
 	}
 	
 	@GetMapping("/login/{email}/{pass}")

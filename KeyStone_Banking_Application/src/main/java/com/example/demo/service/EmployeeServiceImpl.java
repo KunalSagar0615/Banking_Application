@@ -66,22 +66,6 @@ public class EmployeeServiceImpl implements EmployeeService{
 		adv.validateMobileNumber(account.getMob());
 		adv.validAdhar(account.getAdharNo());
 		
-		
-//		if(account instanceof SavingAccount) {
-//			
-//			SavingAccount savingAccount = (SavingAccount) account;
-//			
-//			if(account.getBalance()<savingAccount.getMinBalance())
-//				throw new InvalidAmountException("You should have to add at least "+savingAccount.getMinBalance()+"!");
-//
-//		}else if(account instanceof CurrentAccount){
-//			
-//			CurrentAccount currentAccount=(CurrentAccount) account;
-//			
-//			if(account.getBalance()<currentAccount.getMinBalance())
-//				throw new InvalidAmountException("You should have to add at least "+currentAccount.getMinBalance()+"!");
-//
-//		}	
 		AccountType type = null;
 		if(account instanceof SavingAccount)
 	        type = AccountType.SAVING;
@@ -94,6 +78,10 @@ public class EmployeeServiceImpl implements EmployeeService{
 			throw new InvalidAmountException("You should have to add at least " + config.getMIN_BALANCE() + "!");
 		
 		accountRepository.save(account);
+		
+		String subject = "Account Created Successfully";
+		String message = "<!DOCTYPE html><html><head><meta charset=\"UTF-8\"><title>Account Created</title></head><body style=\"font-family:Arial;background:#f4f6f8;padding:20px;\"><div style=\"max-width:600px;margin:auto;background:white;padding:30px;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,0.1);\"><h2 style=\"color:#2E7D32;\">Welcome to Keystone Bank</h2><p>Dear " + account.getName() + ",</p><p>Your bank account has been successfully created with <strong>Keystone Bank</strong>.</p><p><strong>Account Number:</strong> " + account.getAcno() + "</p><p><strong>Account Type:</strong> " + type + "</p><p>We are committed to providing you with secure and reliable banking services.</p><p>If you have any questions, please contact our support team.</p><br><p>Thank you for choosing Keystone Bank.</p><p><strong>Keystone Banking Team</strong></p></div></body></html>";
+		emailService.sendMail(account.getEmail(), subject, message);
 	}
 
 	
@@ -219,8 +207,12 @@ public class EmployeeServiceImpl implements EmployeeService{
 	    if (dto.getAddress() != null)
 	        existingAccount.setAddress(dto.getAddress());
 		
+	    String subject = "Account Updated Successfully";
+	    String message = "<!DOCTYPE html><html><head><meta charset=\"UTF-8\"><title>Account Updated</title></head><body style=\"font-family:Arial;background:#f4f6f8;padding:20px;\"><div style=\"max-width:600px;margin:auto;background:white;padding:30px;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,0.1);\"><h2 style=\"color:#1976D2;\">Account Details Updated</h2><p>Dear " + existingAccount.getName() + ",</p><p>Your account details have been successfully updated in <strong>Keystone Bank</strong>.</p><p>If you did not request this update, please contact our support team immediately.</p><br><p>Thank you for banking with us.</p><p><strong>Keystone Banking Team</strong></p></div></body></html>";
+	    emailService.sendMail(existingAccount.getEmail(), subject, message);
 		
-		return UpdateAccountDTO.toAccountDTO(existingAccount);
+	    accountRepository.save(existingAccount); 
+	    return UpdateAccountDTO.toAccountDTO(existingAccount);
 	}
 
 	
@@ -232,21 +224,7 @@ public class EmployeeServiceImpl implements EmployeeService{
 		
 		Account account = this.getByAccountNumber(acno);
 		adv.validateAmount(amount);		
-		
-//		if(account instanceof SavingAccount savingAccount) {
-//			if(account.getBalance()-amount < savingAccount.getMinBalance()) {
-//				throw new InvalidAmountException("You should have to maintain minimum balance!! You can only withdraw "+(account.getBalance()-savingAccount.getMinBalance()));
-//			}
-//			
-//			if(amount>savingAccount.getWithdrawLimit()) {
-//				throw new InvalidAmountException("You cannot withdraw more than "+savingAccount.getWithdrawLimit()+" at a time !");
-//			}
-//			
-//		}else if(account instanceof CurrentAccount currentAccount){
-//			if(account.getBalance()-amount < currentAccount.getMinBalance()) {
-//				throw new InvalidAmountException("You should have to maintain minimum balance!! You can only withdraw "+(account.getBalance()-currentAccount.getMinBalance()));
-//			}
-//		}
+
 		AccountType type = null;
 		if(account instanceof SavingAccount)
 	        type = AccountType.SAVING;
