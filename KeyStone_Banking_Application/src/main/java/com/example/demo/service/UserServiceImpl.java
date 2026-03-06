@@ -37,7 +37,7 @@ public class UserServiceImpl implements UserService,UserDetailsService {
 	public void registerUser(User user) {
 		
 		User user1= new User();
-
+		
 	    accountDetailsValidation.validateEmail(user.getEmail());
 	    if(userRepository.findByEmail(user.getEmail()).isPresent()) {
 	        throw new InvalidEmailFormate("Email already exists !");

@@ -1,5 +1,9 @@
 package com.example.demo.service;
 
+import java.security.SecureRandom;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,11 +59,14 @@ public class EmployeeServiceImpl implements EmployeeService{
 	@Autowired
 	private AccountTypeConfigRepository accountTypeConfigRepository;
 	
+	private static final String BANK_CODE = "6150"; // unique bank no
+    private final SecureRandom random = new SecureRandom(); 
 	
 //-----------------------------CREATE ACCOUNT--------------------------------------	
 		
 	@Override
 	public void createAccount(Account account) {
+		
 		
 		adv.validName(account.getName());
 		adv.validateEmail(account.getEmail());
@@ -77,6 +84,7 @@ public class EmployeeServiceImpl implements EmployeeService{
 		if(account.getBalance() < config.getMIN_BALANCE())
 			throw new InvalidAmountException("You should have to add at least " + config.getMIN_BALANCE() + "!");
 		
+		account.setAcno(generateAccountNumber());
 		accountRepository.save(account);
 		
 		String subject = "Account Created Successfully";
@@ -273,11 +281,33 @@ public class EmployeeServiceImpl implements EmployeeService{
 
 	@Override
 	public void setTransaction(Long acccountno, Double amount, TransactionType transactionType) {
-		transactionRepository.save(new Transactions(acccountno, amount, transactionType));
+		String txnId = generateTransactionId();
+		transactionRepository.save(new Transactions(txnId ,acccountno, amount, transactionType));
 	}
 
 
 	
+	// generate unique account number
+    public Long generateAccountNumber() {
+        Long acno;
+        do {
+        	String year = String.valueOf(LocalDate.now().getYear()).substring(2);
+            int randomPart = 100000 + random.nextInt(900000);
+            String accountNumber = BANK_CODE + year + randomPart;
+            acno = Long.parseLong(accountNumber);
+        } while (accountRepository.existsByAcno(acno));
 
+        return acno;
+    }
+	
+    
+    //generate transaction unique id
+    public String generateTransactionId() {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+        String datePart = LocalDateTime.now().format(formatter);
+        SecureRandom random = new SecureRandom();
+        int randomPart = 100000 + random.nextInt(900000);
+        return "TXN" + datePart + randomPart;
+    }
 
 }

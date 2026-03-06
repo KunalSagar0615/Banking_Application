@@ -15,7 +15,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class TransactionsDTO {
 
-	private Long transitionId;
+	private String transitionId;
 	private LocalDate transitionDate;
 	private LocalTime transitionTime;
 	private Double amount;
@@ -25,7 +25,7 @@ public class TransactionsDTO {
 	public static TransactionsDTO toTransactionsDTO(Transactions transaction) {
 		TransactionsDTO dto=new TransactionsDTO();
 		
-		dto.setTransitionId(transaction.getTransitionId());
+		dto.setTransitionId(transaction.getTxnId());
 		dto.setTransitionDate(transaction.getTransitionDate());
 		dto.setTransitionTime(transaction.getTransitionTime());
 		dto.setAmount(transaction.getAmount());
