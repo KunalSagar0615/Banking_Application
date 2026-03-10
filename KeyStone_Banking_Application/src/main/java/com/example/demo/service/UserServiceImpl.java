@@ -1,9 +1,6 @@
 package com.example.demo.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -32,10 +29,6 @@ public class UserServiceImpl implements UserService,UserDetailsService {
 	
 	@Autowired
 	private PasswordEncoder passwordEncoder;
-	
-	
-	@Autowired
-	private AuthenticationManager authenticationManager;
 	
 	
 	@Override
@@ -70,27 +63,21 @@ public class UserServiceImpl implements UserService,UserDetailsService {
 
 
 	
-
 	@Override
-	public String loginUser(String email, String pass) {
-	
-	    try {
-	
-	        Authentication authentication = authenticationManager.authenticate(
-	                new UsernamePasswordAuthenticationToken(email, pass)
-	        );
-	
-	        if (authentication.isAuthenticated()) {
-	            return "LOGIN SUCCESS";
-	        }
-	
-	    } catch (Exception e) {
-	        return "INVALID EMAIL OR PASSWORD";
-	    }
-	
-	    return "LOGIN FAILED";
+	public String loginUser(String email,String pass) {
+		
+		User temp=userRepository.findByEmail(email).orElse(null);
+		if(temp==null)
+			return "USER NOT FOUND";
+		
+		if(pass.equals(temp.getPassword()))
+			return "LOGIN SUCCESSFULL";	
+		
+		return "INVALID PASSWORD";
+			
 	}
-	
+
+
 
 	@Override
 	public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
