@@ -15,7 +15,7 @@ import com.example.demo.service.UserService;
 
 @RestController
 @RequestMapping("/user")
-@CrossOrigin(origins = "http://localhost:5173")
+@CrossOrigin(origins = "*")
 public class userController {
 
 	//to add new employee or login employee 
