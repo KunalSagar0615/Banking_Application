@@ -13,6 +13,7 @@ import com.example.demo.exception.InvalidMobileNumber;
 import com.example.demo.exception.InvalidNameException;
 
 @RestControllerAdvice
+
 public class GlobalExceptionHandler {
 
 	@ExceptionHandler(InvalidAccountNumber.class)
