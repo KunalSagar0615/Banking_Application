@@ -1,5 +1,7 @@
 package com.example.demo.service;
 
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -13,6 +15,7 @@ import com.example.demo.exception.AccountDetailsValidation;
 import com.example.demo.exception.InvalidEmailFormate;
 import com.example.demo.model.User;
 import com.example.demo.repository.UserRepository;
+import com.example.demo.security.JwtUtil;
 
 @Service
 public class UserServiceImpl implements UserService,UserDetailsService {
@@ -64,17 +67,16 @@ public class UserServiceImpl implements UserService,UserDetailsService {
 
 	
 	@Override
-	public String loginUser(String email,String pass) {
-		
-		User temp=userRepository.findByEmail(email).orElse(null);
-		if(temp==null)
-			return "USER NOT FOUND";
-		
-		if(pass.equals(temp.getPassword()))
-			return "LOGIN SUCCESSFULL";	
-		
-		return "INVALID PASSWORD";
-			
+	public String loginUser(String email, String pass) {
+
+	    Optional<User> user = userRepository.findByEmail(email);
+
+	    if(user.isPresent() && passwordEncoder.matches(pass, user.get().getPassword())) {
+
+	        return JwtUtil.generateToken(user.get().getEmail());
+	    }
+
+	    throw new RuntimeException("Invalid email or password");
 	}
 
 

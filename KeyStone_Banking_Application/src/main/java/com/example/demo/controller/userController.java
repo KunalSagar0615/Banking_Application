@@ -1,5 +1,8 @@
 package com.example.demo.controller;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -31,8 +34,14 @@ public class userController {
 	}
 	
 	@GetMapping("/login/{email}/{pass}")
-	public void loginUser(@PathVariable String email,@PathVariable String pass) {
-		userService.loginUser(email, pass);
+	public Map<String,String> loginUser(@PathVariable String email,@PathVariable String pass){
+
+	    String token = userService.loginUser(email, pass);
+
+	    Map<String,String> response = new HashMap<>();
+	    response.put("token", token);
+
+	    return response;
 	}
 	
 	

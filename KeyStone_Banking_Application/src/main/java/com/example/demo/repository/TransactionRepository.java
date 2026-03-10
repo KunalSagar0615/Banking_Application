@@ -9,7 +9,7 @@ import com.example.demo.dto.TransactionsDTO;
 import com.example.demo.model.Transactions;
 
 @Repository
-public interface TransactionRepository extends JpaRepository<Transactions, Long>{
+public interface TransactionRepository extends JpaRepository<Transactions, String>{
 	List<Transactions> findByAccountno(Long accountNo);
 	
 }
