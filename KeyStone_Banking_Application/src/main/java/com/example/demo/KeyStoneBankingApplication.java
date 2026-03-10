@@ -24,27 +24,24 @@ public class KeyStoneBankingApplication {
 	}
 
 
-    @Bean
-    CommandLineRunner createAdmin(UserRepository userRepository, PasswordEncoder passwordEncoder) {
-        return args -> {
+	@Bean
+	CommandLineRunner createAdmin(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+	    return args -> {
 
-            if (userRepository.findByName("admin")==null) {
+	        if (userRepository.findByName("admin") == null) {
 
-                User admin = new User();
-                admin.setEmpId(1);
-                admin.setName("admin");
-                admin.setEmail("admin@gmail.com");
-                admin.setPassword(passwordEncoder.encode("admin123"));
-                admin.setRole(Role.ADMIN);
+	            User admin = new User();
+	            admin.setName("admin");
+	            admin.setEmail("admin@gmail.com");
+	            admin.setPassword(passwordEncoder.encode("admin123"));
+	            admin.setRole(Role.ADMIN);
 
-                userRepository.save(admin);
+	            userRepository.save(admin);
 
-                System.out.println("Admin user created");
-            }
-        };
-        
-        
-    }
+	            System.out.println("Admin user created");
+	        }
+	    };
+	}
     
     @Bean
 	CommandLineRunner setDefaultConfig(AccountTypeConfigRepository repo) {

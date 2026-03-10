@@ -30,7 +30,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "AccountType" , discriminatorType = DiscriminatorType.STRING)
-@Table(name = "key_stone_banking_application")
+@Table(name = "Account_Details")
 public class Account {
 
 	@Id

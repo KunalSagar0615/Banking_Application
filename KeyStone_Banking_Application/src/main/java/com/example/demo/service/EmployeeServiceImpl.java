@@ -90,6 +90,7 @@ public class EmployeeServiceImpl implements EmployeeService{
 		String subject = "Account Created Successfully";
 		String message = "<!DOCTYPE html><html><head><meta charset=\"UTF-8\"><title>Account Created</title></head><body style=\"font-family:Arial;background:#f4f6f8;padding:20px;\"><div style=\"max-width:600px;margin:auto;background:white;padding:30px;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,0.1);\"><h2 style=\"color:#2E7D32;\">Welcome to Keystone Bank</h2><p>Dear " + account.getName() + ",</p><p>Your bank account has been successfully created with <strong>Keystone Bank</strong>.</p><p><strong>Account Number:</strong> " + account.getAcno() + "</p><p><strong>Account Type:</strong> " + type + "</p><p>We are committed to providing you with secure and reliable banking services.</p><p>If you have any questions, please contact our support team.</p><br><p>Thank you for choosing Keystone Bank.</p><p><strong>Keystone Banking Team</strong></p></div></body></html>";
 		emailService.sendMail(account.getEmail(), subject, message);
+		System.out.println("Hello");
 	}
 
 	

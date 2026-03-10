@@ -15,6 +15,7 @@ public class EmailService {
 //    @Value("${sendgrid.api.key}")
     private String sendGridApiKey=EmailApi.api;
 
+//    private static final String FROM_EMAIL = "javarsbatch@gmail.com";
     private static final String FROM_EMAIL = "kunals.pcimca@gmail.com";
 
     public void sendMail(String to, String subject, String message) {
@@ -33,7 +34,8 @@ public class EmailService {
             request.setEndpoint("mail/send");
             request.setBody(mail.build());
 
-            sg.api(request);
+            Response rs =  sg.api(request);
+            System.out.println(rs.getStatusCode());
 
         } catch (IOException ex) {
             throw new RuntimeException("Error sending email", ex);
