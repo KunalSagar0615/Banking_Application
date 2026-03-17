@@ -19,6 +19,7 @@ import com.example.demo.enumeration.AccountType;
 import com.example.demo.enumeration.TransactionType;
 import com.example.demo.exception.AccountDetailsValidation;
 import com.example.demo.exception.AccountNotFoundException;
+import com.example.demo.exception.ConfigNotFound;
 import com.example.demo.exception.InvalidAmountException;
 import com.example.demo.exception.InvalidEmailFormate;
 import com.example.demo.exception.InvalidMobileNumber;
@@ -79,7 +80,7 @@ public class EmployeeServiceImpl implements EmployeeService{
 	    else if(account instanceof CurrentAccount)
 	        type = AccountType.CURRENT;
 		
-		AccountTypeConfig config=accountTypeConfigRepository.findById(type).orElseThrow(()-> new RuntimeException("CONFIGURATION NOT FOUND !"));
+		AccountTypeConfig config=accountTypeConfigRepository.findById(type).orElseThrow(()-> new ConfigNotFound("CONFIGURATION NOT FOUND !"));
 		
 		if(account.getBalance() < config.getMIN_BALANCE())
 			throw new InvalidAmountException("You should have to add at least " + config.getMIN_BALANCE() + "!");
@@ -118,14 +119,14 @@ public class EmployeeServiceImpl implements EmployeeService{
 	@Override
 	public List<TransactionsDTO> getTransactionsByAccNo(Long accno) {
 
-	    Account account=this.getByAccountNumber(accno);
-	    
-	    List<Transactions> transactions =transactionRepository.findByAccountno(accno);
-	    if (transactions.isEmpty()) {
-	        throw new AccountNotFoundException("Transactions not found with Account number: " + accno);
-	    }
-	    
-	    return transactions.stream().map(TransactionsDTO::toTransactionsDTO).toList();
+	    // checks account exists
+	    this.getByAccountNumber(accno);
+
+	    List<Transactions> transactions = transactionRepository.findByAccountno(accno);
+
+	    return transactions.stream()
+	            .map(TransactionsDTO::toTransactionsDTO)
+	            .toList();
 	}
 	
 	
@@ -277,6 +278,48 @@ public class EmployeeServiceImpl implements EmployeeService{
 		emailService.sendMail(account.getEmail(), subject, message);
 
 		return AccountBalanceMapper.toBalanceDTO(account);
+	}
+	
+	
+
+//--------------------------------------------------------TRANSFER AMOUNT TO ANOTHER ACCOUNT--------------------------------------------------------------------
+	@Transactional
+	@Override
+	public BalanceDTO transferMoney(Long fromAccount, Long toAccount, Double amount) {
+
+	    if(fromAccount.equals(toAccount))
+	        throw new InvalidAmountException("Sender and receiver account cannot be same");
+
+	    adv.validateAmount(amount);
+
+	    Account sender = this.getByAccountNumber(fromAccount);
+	    Account receiver = this.getByAccountNumber(toAccount);
+
+	    AccountType type = null;
+	    if(sender instanceof SavingAccount)
+	        type = AccountType.SAVING;
+	    else if(sender instanceof CurrentAccount)
+	        type = AccountType.CURRENT;
+
+	    AccountTypeConfig config = accountTypeConfigRepository
+	            .findById(type)
+	            .orElseThrow(() -> new ConfigNotFound("CONFIGURATION NOT FOUND"));
+
+	    if(sender.getBalance() - amount < config.getMIN_BALANCE())
+	        throw new InvalidAmountException(
+	                "Insufficient balance. Minimum balance must be maintained."
+	        );
+
+	    sender.setBalance(sender.getBalance() - amount);
+	    receiver.setBalance(receiver.getBalance() + amount);
+
+	    accountRepository.save(sender);
+	    accountRepository.save(receiver);
+
+	    setTransaction(sender.getAcno(), amount, TransactionType.DEBIT);
+	    setTransaction(receiver.getAcno(), amount, TransactionType.CREDIT);
+
+	    return AccountBalanceMapper.toBalanceDTO(sender);
 	}
 
 

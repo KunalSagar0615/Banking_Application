@@ -13,6 +13,7 @@ import com.example.demo.email.EmailService;
 import com.example.demo.enumeration.Role;
 import com.example.demo.exception.AccountDetailsValidation;
 import com.example.demo.exception.InvalidEmailFormate;
+import com.example.demo.exception.InvalidPassword;
 import com.example.demo.model.User;
 import com.example.demo.repository.UserRepository;
 import com.example.demo.security.JwtUtil;
@@ -51,7 +52,7 @@ public class UserServiceImpl implements UserService,UserDetailsService {
 	    
 	    
 	    if(!user.getPassword().matches(pattern))
-	    	throw new RuntimeException("Invalid Password formate !");
+	    	throw new InvalidPassword("Invalid Password formate !");
 	    
 	    user1.setEmpId(user.getEmpId());
 	    user1.setName(user.getName());
@@ -73,10 +74,10 @@ public class UserServiceImpl implements UserService,UserDetailsService {
 
 	    if(user.isPresent() && passwordEncoder.matches(pass, user.get().getPassword())) {
 
-	        return JwtUtil.generateToken(user.get().getEmail());
+	        return JwtUtil.generateToken(user.get().getEmail(),user.get().getRole().name());
 	    }
 
-	    throw new RuntimeException("Invalid email or password");
+	    throw new InvalidPassword("Invalid email or password");
 	}
 
 

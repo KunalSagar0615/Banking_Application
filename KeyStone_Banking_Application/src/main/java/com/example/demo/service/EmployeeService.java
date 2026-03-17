@@ -48,7 +48,7 @@ public interface EmployeeService {
 	//display account Transactions
 	List<TransactionsDTO> getTransactionsByAccNo(Long accno);
 	
-	
+	BalanceDTO transferMoney(Long fromAccount, Long toAccount, Double amount);
 	
 	
 }

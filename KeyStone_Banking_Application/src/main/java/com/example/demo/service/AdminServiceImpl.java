@@ -7,6 +7,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.example.demo.enumeration.AccountType;
+import com.example.demo.exception.ConfigNotFound;
+import com.example.demo.exception.InvalidAmountException;
 import com.example.demo.model.AccountTypeConfig;
 import com.example.demo.model.User;
 import com.example.demo.repository.AccountRepository;
@@ -38,7 +40,7 @@ public class AdminServiceImpl implements AdminService {
 	@Transactional
 	@Override
 	public void updateMinBalanceByType(AccountType type, Double amount) {
-		AccountTypeConfig config = accountTypeConfigRepository.findById(type).orElseThrow(()-> new RuntimeException("Configuration not found"));
+		AccountTypeConfig config = accountTypeConfigRepository.findById(type).orElseThrow(()-> new ConfigNotFound("Configuration not found"));
 		config.setMIN_BALANCE(amount);
 	}
 
@@ -47,9 +49,9 @@ public class AdminServiceImpl implements AdminService {
 	@Override
 	public void updateWithdrawLimitByType(AccountType type, Double amount) {
 		
-		AccountTypeConfig config = accountTypeConfigRepository.findById(type).orElseThrow(()-> new RuntimeException("Configuration not found"));
+		AccountTypeConfig config = accountTypeConfigRepository.findById(type).orElseThrow(()-> new ConfigNotFound("Configuration not found"));
 		if(type==AccountType.CURRENT)
-			throw new RuntimeException("You Cannot Set Withdraw Limit to CURRENT account");
+			throw new InvalidAmountException("You Cannot Set Withdraw Limit to CURRENT account");
 		
 		config.setWITHDRAW_LIMIT(amount);
 	}

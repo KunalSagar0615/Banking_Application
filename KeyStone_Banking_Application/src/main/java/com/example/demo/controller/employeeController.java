@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.demo.dto.AccountResponseDTO;
 import com.example.demo.dto.BalanceDTO;
 import com.example.demo.dto.TransactionsDTO;
+import com.example.demo.dto.TransferMoneyDTO;
 import com.example.demo.dto.UpdateAccountDTO;
 import com.example.demo.model.Account;
 import com.example.demo.model.CurrentAccount;
@@ -75,6 +76,18 @@ public class employeeController {
 		BalanceDTO balanceDTO = employeeService.depositAmount(acno, amount);
 		
 		return ResponseEntity.ok(balanceDTO);
+	}
+	
+	@PostMapping("/transfer")
+	public ResponseEntity<BalanceDTO> transferMoney(@RequestBody TransferMoneyDTO dto){
+
+	    BalanceDTO balance = employeeService.transferMoney(
+	            dto.getFromAccount(),
+	            dto.getToAccount(),
+	            dto.getAmount()
+	    );
+
+	    return ResponseEntity.ok(balance);
 	}
 	
 	@PutMapping("/update-account/{acno}")

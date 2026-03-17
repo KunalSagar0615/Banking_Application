@@ -25,8 +25,9 @@ public class AccountResponseDTO {
 		AccountResponseDTO dto=new AccountResponseDTO();
 		
 		//set account number like ***1234
-		String accNo = account.getAcno().toString();
-		dto.setAcno("********" + accNo.substring(accNo.length() - 4));
+		String accNo = account.getAcno()+"";
+//		dto.setAcno("********" + accNo.substring(accNo.length() - 4));
+		dto.setAcno(String.valueOf(account.getAcno()));
   
 	
         //set account number

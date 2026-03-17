@@ -31,9 +31,9 @@ public class KeyStoneBankingApplication {
 	        if (userRepository.findByName("admin") == null) {
 
 	            User admin = new User();
-	            admin.setName("admin");
-	            admin.setEmail("admin@gmail.com");
-	            admin.setPassword(passwordEncoder.encode("admin123"));
+	            admin.setName("Kunal Sagar");
+	            admin.setEmail("kunalsagar0615@gmail.com");
+	            admin.setPassword(passwordEncoder.encode("Kunal@123"));
 	            admin.setRole(Role.ADMIN);
 
 	            userRepository.save(admin);

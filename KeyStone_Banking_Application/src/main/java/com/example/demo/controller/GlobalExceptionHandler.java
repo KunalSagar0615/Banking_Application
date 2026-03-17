@@ -5,12 +5,14 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import com.example.demo.exception.AccountNotFoundException;
+import com.example.demo.exception.ConfigNotFound;
 import com.example.demo.exception.InvalidAccountNumber;
 import com.example.demo.exception.InvalidAdharNumber;
 import com.example.demo.exception.InvalidAmountException;
 import com.example.demo.exception.InvalidEmailFormate;
 import com.example.demo.exception.InvalidMobileNumber;
 import com.example.demo.exception.InvalidNameException;
+import com.example.demo.exception.InvalidPassword;
 
 @RestControllerAdvice
 
@@ -50,5 +52,15 @@ public class GlobalExceptionHandler {
 	public ResponseEntity<?> handleAccountNotFound(AccountNotFoundException e) {
 	    return ResponseEntity.status(HttpStatus.NOT_FOUND)
 	            .body(e.getMessage());
+	}
+	
+	@ExceptionHandler(ConfigNotFound.class)
+	public ResponseEntity<?> ConfigNotFound(ConfigNotFound e){
+		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+	}
+	
+	@ExceptionHandler(InvalidPassword.class)
+	public ResponseEntity<?> handleInvalidPasswordException(InvalidPassword e){
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
 	}
 }

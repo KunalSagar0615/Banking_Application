@@ -18,11 +18,6 @@ import com.example.demo.service.EmployeeService;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
-
-
-
-
-
 @RestController
 @RequestMapping("/admin")
 @CrossOrigin(origins = "*")
